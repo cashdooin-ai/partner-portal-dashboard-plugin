@@ -28,6 +28,13 @@ class PPD_Ajax {
         add_action('wp_ajax_ppd_submit_application', array($this, 'submit_application'));
         add_action('wp_ajax_nopriv_ppd_submit_application', array($this, 'submit_application'));
 
+        // New partner actions
+        add_action('wp_ajax_ppd_move_lead', array($this, 'move_lead_stage'));
+        add_action('wp_ajax_ppd_mark_notification_read', array($this, 'mark_notification_read'));
+        add_action('wp_ajax_ppd_mark_all_notifications_read', array($this, 'mark_all_notifications_read'));
+        add_action('wp_ajax_ppd_download_document', array($this, 'download_document'));
+        add_action('wp_ajax_ppd_get_analytics', array($this, 'get_analytics'));
+
         // Admin actions
         add_action('wp_ajax_ppd_admin_add_college', array($this, 'admin_add_college'));
         add_action('wp_ajax_ppd_admin_assign_college', array($this, 'admin_assign_college'));
@@ -36,6 +43,9 @@ class PPD_Ajax {
         add_action('wp_ajax_ppd_admin_add_task', array($this, 'admin_add_task'));
         add_action('wp_ajax_ppd_admin_update_lead', array($this, 'admin_update_lead'));
         add_action('wp_ajax_ppd_admin_approve_application', array($this, 'admin_approve_application'));
+        add_action('wp_ajax_ppd_admin_add_commission', array($this, 'admin_add_commission'));
+        add_action('wp_ajax_ppd_admin_update_commission', array($this, 'admin_update_commission'));
+        add_action('wp_ajax_ppd_admin_upload_document', array($this, 'admin_upload_document'));
     }
 
     public function update_profile() {
@@ -326,5 +336,162 @@ class PPD_Ajax {
         wp_new_user_notification($user_id, null, 'both');
 
         wp_send_json_success(array('message' => 'Partner created successfully'));
+    }
+
+    // New feature AJAX handlers
+    public function move_lead_stage() {
+        check_ajax_referer('ppd_nonce', 'nonce');
+
+        if (!PPD_Auth::is_partner_logged_in()) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+
+        $lead_id = intval($_POST['lead_id']);
+        $new_stage = sanitize_text_field($_POST['new_stage']);
+
+        $result = PPD_Pipeline::move_lead_to_stage($lead_id, $new_stage);
+
+        if ($result !== false) {
+            wp_send_json_success(array('message' => 'Lead moved successfully'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to move lead'));
+        }
+    }
+
+    public function mark_notification_read() {
+        check_ajax_referer('ppd_nonce', 'nonce');
+
+        if (!is_user_logged_in()) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+
+        $notification_id = intval($_POST['notification_id']);
+
+        $result = PPD_Notifications::mark_as_read($notification_id);
+
+        if ($result !== false) {
+            wp_send_json_success(array('message' => 'Notification marked as read'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to mark notification'));
+        }
+    }
+
+    public function mark_all_notifications_read() {
+        check_ajax_referer('ppd_nonce', 'nonce');
+
+        if (!is_user_logged_in()) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+
+        $user_id = get_current_user_id();
+
+        $result = PPD_Notifications::mark_all_as_read($user_id);
+
+        if ($result !== false) {
+            wp_send_json_success(array('message' => 'All notifications marked as read'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to mark notifications'));
+        }
+    }
+
+    public function download_document() {
+        check_ajax_referer('ppd_download_' . $_GET['document_id'], 'nonce');
+
+        if (!PPD_Auth::is_partner_logged_in()) {
+            wp_die('Unauthorized');
+        }
+
+        $document_id = intval($_GET['document_id']);
+        $document = PPD_Documents::get_document($document_id);
+
+        if (!$document) {
+            wp_die('Document not found');
+        }
+
+        // Check permission
+        $partner_id = PPD_Auth::get_current_partner_id();
+        if (!$document->is_public && $document->partner_id != $partner_id && $document->partner_id !== null) {
+            wp_die('Access denied');
+        }
+
+        // Send file
+        if (file_exists($document->file_path)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: ' . $document->file_type);
+            header('Content-Disposition: attachment; filename="' . basename($document->file_name) . '"');
+            header('Content-Length: ' . $document->file_size);
+            header('Pragma: public');
+
+            readfile($document->file_path);
+            exit;
+        } else {
+            wp_die('File not found');
+        }
+    }
+
+    public function get_analytics() {
+        check_ajax_referer('ppd_nonce', 'nonce');
+
+        if (!PPD_Auth::is_partner_logged_in()) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+
+        $partner_id = PPD_Auth::get_current_partner_id();
+        $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : 'month';
+
+        $analytics = PPD_Analytics::get_partner_analytics($partner_id, $period);
+
+        wp_send_json_success($analytics);
+    }
+
+    // Admin AJAX for new features
+    public function admin_add_commission() {
+        check_ajax_referer('ppd_admin_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+
+        $result = PPD_Commissions::add_commission($_POST);
+
+        if ($result) {
+            wp_send_json_success(array('message' => 'Commission added successfully'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to add commission'));
+        }
+    }
+
+    public function admin_update_commission() {
+        check_ajax_referer('ppd_admin_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+
+        $commission_id = intval($_POST['commission_id']);
+
+        $result = PPD_Commissions::update_commission($commission_id, $_POST);
+
+        if ($result !== false) {
+            wp_send_json_success(array('message' => 'Commission updated successfully'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to update commission'));
+        }
+    }
+
+    public function admin_upload_document() {
+        check_ajax_referer('ppd_admin_nonce', 'nonce');
+
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+
+        if (!isset($_FILES['document'])) {
+            wp_send_json_error(array('message' => 'No file uploaded'));
+        }
+
+        $result = PPD_Documents::upload_document($_FILES['document'], $_POST);
+
+        wp_send_json($result);
     }
 }

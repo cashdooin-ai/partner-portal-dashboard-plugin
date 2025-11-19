@@ -204,6 +204,23 @@ GPL v2 or later
 
 ## Changelog
 
+### Version 2.0.0
+- **NEW:** Analytics Dashboard with charts and performance metrics
+- **NEW:** Commission/Earnings Tracking system
+- **NEW:** Real-time Notifications system
+- **NEW:** Lead Pipeline with Kanban board (drag & drop)
+- **NEW:** Document Management system with categories
+- Integrated Chart.js for visual analytics
+- Added monthly trend analysis
+- Conversion rate tracking
+- Task completion metrics
+- Payment history and commission management
+- Document upload and download with access control
+- Notifications bell with unread count
+- Lead status distribution charts
+- Top colleges by leads analysis
+- Enhanced database with 3 new tables (commissions, notifications, documents)
+
 ### Version 1.0.0
 - Initial release
 - Partner dashboard with profile management
@@ -214,6 +231,88 @@ GPL v2 or later
 - Partner application form
 - Complete admin panel
 - Shortcode system
+
+## New Features in Version 2.0
+
+### 1. Analytics Dashboard
+- Real-time performance metrics
+- Lead conversion rate tracking
+- Monthly trend analysis (last 6 months)
+- Task completion rate
+- Earnings summary
+- Lead status distribution pie chart
+- Top performing colleges
+- Comparative analysis (current vs previous month)
+
+### 2. Commission/Earnings Tracking
+- Track all commissions and earnings
+- Pending vs paid amount breakdown
+- Monthly earnings report
+- Payment history with transaction details
+- Commission types (lead-based, performance, etc.)
+- Admin can add and manage commissions
+- Automatic notifications when commissions are paid
+
+### 3. Notifications System
+- Real-time notifications for partners
+- Notification bell with unread count
+- Different notification types (task, lead, commission, document, etc.)
+- Mark as read/unread functionality
+- Mark all as read option
+- Automatic notifications for:
+  - New task assignments
+  - Lead status changes
+  - Admin notes on leads
+  - College/service assignments
+  - Commission payments
+  - New document uploads
+  - Task due date reminders
+
+### 4. Lead Pipeline/Kanban Board
+- Visual pipeline with 8 stages:
+  - New
+  - Contacted
+  - Qualified
+  - Proposal Sent
+  - Negotiation
+  - Converted
+  - Closed Won
+  - Closed Lost
+- Drag and drop leads between stages
+- Color-coded stages
+- Lead count per stage
+- Win rate calculation
+- Pipeline statistics
+
+### 5. Document Management
+- Upload and organize documents
+- 9 categories: Marketing, Contracts, Training, Guidelines, Certificates, etc.
+- File type support: PDF, DOC, XLS, PPT, Images, ZIP
+- 10MB file size limit
+- Public vs partner-specific documents
+- Secure download with access control
+- File size display
+- Category filtering
+- Document search
+- Automatic notifications when new documents are uploaded
+
+## Technical Implementation
+
+### New Database Tables
+- `wp_ppd_commissions` - Commission tracking
+- `wp_ppd_notifications` - Notification system
+- `wp_ppd_documents` - Document management
+
+### External Libraries
+- Chart.js 3.9.1 - For analytics charts
+- Sortable.js 1.15.0 - For drag and drop pipeline
+
+### Security Features
+- Nonce verification on all AJAX calls
+- File type validation for uploads
+- Access control for document downloads
+- Sanitization of all user inputs
+- Role-based permissions
 
 ## Credits
 

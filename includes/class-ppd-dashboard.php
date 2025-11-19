@@ -73,18 +73,48 @@ class PPD_Dashboard {
                 </div>
             </div>
 
+            <!-- Notifications Badge -->
+            <?php
+            $unread_count = PPD_Notifications::get_unread_count($partner_id);
+            if ($unread_count > 0): ?>
+                <div class="ppd-notifications-bell">
+                    <span class="ppd-bell-icon" id="ppd-notifications-trigger">🔔</span>
+                    <span class="ppd-notification-count"><?php echo esc_html($unread_count); ?></span>
+                </div>
+            <?php endif; ?>
+
             <div class="ppd-dashboard-navigation">
-                <a href="#profile" class="ppd-nav-tab active" data-tab="profile">Profile</a>
+                <a href="#analytics" class="ppd-nav-tab active" data-tab="analytics">Analytics</a>
+                <a href="#profile" class="ppd-nav-tab" data-tab="profile">Profile</a>
+                <a href="#pipeline" class="ppd-nav-tab" data-tab="pipeline">Lead Pipeline</a>
+                <a href="#leads" class="ppd-nav-tab" data-tab="leads">Leads Board</a>
+                <a href="#commissions" class="ppd-nav-tab" data-tab="commissions">Earnings</a>
                 <a href="#colleges" class="ppd-nav-tab" data-tab="colleges">My Colleges</a>
                 <a href="#services" class="ppd-nav-tab" data-tab="services">Services</a>
                 <a href="#tasks" class="ppd-nav-tab" data-tab="tasks">Tasks</a>
-                <a href="#leads" class="ppd-nav-tab" data-tab="leads">Leads Board</a>
+                <a href="#documents" class="ppd-nav-tab" data-tab="documents">Documents</a>
                 <a href="#google-sheets" class="ppd-nav-tab" data-tab="google-sheets">Google Sheets</a>
             </div>
 
             <div class="ppd-dashboard-content">
-                <div id="ppd-tab-profile" class="ppd-tab-content active">
+                <div id="ppd-tab-analytics" class="ppd-tab-content active">
+                    <?php echo self::render_analytics_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-profile" class="ppd-tab-content">
                     <?php echo self::render_profile_tab($partner_data); ?>
+                </div>
+
+                <div id="ppd-tab-pipeline" class="ppd-tab-content">
+                    <?php echo self::render_pipeline_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-leads" class="ppd-tab-content">
+                    <?php echo self::render_leads_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-commissions" class="ppd-tab-content">
+                    <?php echo self::render_commissions_tab($partner_id); ?>
                 </div>
 
                 <div id="ppd-tab-colleges" class="ppd-tab-content">
@@ -99,13 +129,18 @@ class PPD_Dashboard {
                     <?php echo self::render_tasks_tab($partner_id); ?>
                 </div>
 
-                <div id="ppd-tab-leads" class="ppd-tab-content">
-                    <?php echo self::render_leads_tab($partner_id); ?>
+                <div id="ppd-tab-documents" class="ppd-tab-content">
+                    <?php echo self::render_documents_tab($partner_id); ?>
                 </div>
 
                 <div id="ppd-tab-google-sheets" class="ppd-tab-content">
                     <?php echo self::render_google_sheets_tab($partner_id); ?>
                 </div>
+            </div>
+
+            <!-- Notifications Panel -->
+            <div id="ppd-notifications-panel" class="ppd-notifications-panel" style="display:none;">
+                <?php echo self::render_notifications_panel($partner_id); ?>
             </div>
         </div>
         <?php
@@ -435,6 +470,324 @@ class PPD_Dashboard {
                     <li>Enter the Sheet ID and Sheet Name above</li>
                     <li>Enable Auto Sync to automatically sync your leads</li>
                 </ol>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_analytics_tab($partner_id) {
+        $analytics = PPD_Analytics::get_partner_analytics($partner_id);
+        $comparison = PPD_Analytics::get_comparison_data($partner_id);
+
+        ob_start();
+        ?>
+        <div class="ppd-analytics-section">
+            <h2>Analytics Dashboard</h2>
+
+            <div class="ppd-analytics-overview">
+                <div class="ppd-analytics-card">
+                    <h3>Performance Overview</h3>
+                    <div class="ppd-analytics-metrics">
+                        <div class="ppd-metric">
+                            <span class="ppd-metric-label">Conversion Rate</span>
+                            <span class="ppd-metric-value"><?php echo esc_html($analytics['conversion_rate']); ?>%</span>
+                        </div>
+                        <div class="ppd-metric">
+                            <span class="ppd-metric-label">Task Completion</span>
+                            <span class="ppd-metric-value"><?php echo esc_html($analytics['task_completion_rate']); ?>%</span>
+                        </div>
+                        <div class="ppd-metric">
+                            <span class="ppd-metric-label">This Month</span>
+                            <span class="ppd-metric-value"><?php echo esc_html($comparison['current_month']); ?> leads</span>
+                            <?php if ($comparison['trend'] == 'up'): ?>
+                                <span class="ppd-trend-up">↑ <?php echo abs($comparison['percentage_change']); ?>%</span>
+                            <?php else: ?>
+                                <span class="ppd-trend-down">↓ <?php echo abs($comparison['percentage_change']); ?>%</span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ppd-charts-grid">
+                <div class="ppd-chart-card">
+                    <h3>Lead Status Distribution</h3>
+                    <canvas id="ppd-status-chart"></canvas>
+                </div>
+
+                <div class="ppd-chart-card">
+                    <h3>Monthly Trend</h3>
+                    <canvas id="ppd-monthly-chart"></canvas>
+                </div>
+
+                <div class="ppd-chart-card">
+                    <h3>Top Colleges by Leads</h3>
+                    <canvas id="ppd-college-chart"></canvas>
+                </div>
+
+                <div class="ppd-chart-card">
+                    <h3>Earnings Summary</h3>
+                    <div class="ppd-earnings-summary">
+                        <div class="ppd-earnings-item">
+                            <span>Total Earned:</span>
+                            <strong>₹<?php echo number_format($analytics['total_earnings'], 2); ?></strong>
+                        </div>
+                        <div class="ppd-earnings-item">
+                            <span>Pending:</span>
+                            <strong>₹<?php echo number_format($analytics['pending_earnings'], 2); ?></strong>
+                        </div>
+                        <div class="ppd-earnings-item">
+                            <span>This Period:</span>
+                            <strong>₹<?php echo number_format($analytics['period_earnings'], 2); ?></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                var analyticsData = <?php echo json_encode($analytics); ?>;
+            </script>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_pipeline_tab($partner_id) {
+        $pipeline_data = PPD_Pipeline::get_leads_by_stage($partner_id);
+        $stats = PPD_Pipeline::get_pipeline_stats($partner_id);
+
+        ob_start();
+        ?>
+        <div class="ppd-pipeline-section">
+            <div class="ppd-pipeline-header">
+                <h2>Lead Pipeline</h2>
+                <div class="ppd-pipeline-stats">
+                    <span>Total: <?php echo esc_html($stats['total_leads']); ?></span>
+                    <span>Won: <?php echo esc_html($stats['won_leads']); ?></span>
+                    <span>Lost: <?php echo esc_html($stats['lost_leads']); ?></span>
+                    <span>Win Rate: <?php echo esc_html($stats['win_rate']); ?>%</span>
+                </div>
+            </div>
+
+            <div class="ppd-pipeline-board">
+                <?php foreach ($pipeline_data as $stage_key => $stage_data): ?>
+                    <div class="ppd-pipeline-column" data-stage="<?php echo esc_attr($stage_key); ?>">
+                        <div class="ppd-pipeline-column-header" style="background-color: <?php echo esc_attr($stage_data['info']['color']); ?>">
+                            <span class="ppd-stage-icon"><?php echo $stage_data['info']['icon']; ?></span>
+                            <span class="ppd-stage-label"><?php echo esc_html($stage_data['info']['label']); ?></span>
+                            <span class="ppd-stage-count"><?php echo esc_html($stage_data['count']); ?></span>
+                        </div>
+                        <div class="ppd-pipeline-cards" data-stage="<?php echo esc_attr($stage_key); ?>">
+                            <?php foreach ($stage_data['leads'] as $lead): ?>
+                                <div class="ppd-pipeline-card" data-lead-id="<?php echo esc_attr($lead->id); ?>">
+                                    <h4><?php echo esc_html($lead->student_name); ?></h4>
+                                    <p><?php echo esc_html($lead->student_email); ?></p>
+                                    <p><?php echo esc_html($lead->student_phone); ?></p>
+                                    <?php if ($lead->notes): ?>
+                                        <div class="ppd-lead-notes"><?php echo esc_html(substr($lead->notes, 0, 50)) . '...'; ?></div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_commissions_tab($partner_id) {
+        $commissions = PPD_Commissions::get_partner_commissions($partner_id);
+        $summary = PPD_Commissions::get_partner_earnings_summary($partner_id);
+        $payment_history = PPD_Commissions::get_payment_history($partner_id);
+
+        ob_start();
+        ?>
+        <div class="ppd-commissions-section">
+            <h2>Earnings & Commissions</h2>
+
+            <div class="ppd-earnings-cards">
+                <div class="ppd-earnings-card">
+                    <div class="ppd-earnings-icon">💰</div>
+                    <div class="ppd-earnings-content">
+                        <h3>₹<?php echo number_format($summary['total_earned'], 2); ?></h3>
+                        <p>Total Earned</p>
+                    </div>
+                </div>
+
+                <div class="ppd-earnings-card">
+                    <div class="ppd-earnings-icon">⏳</div>
+                    <div class="ppd-earnings-content">
+                        <h3>₹<?php echo number_format($summary['pending_amount'], 2); ?></h3>
+                        <p>Pending Amount</p>
+                    </div>
+                </div>
+
+                <div class="ppd-earnings-card">
+                    <div class="ppd-earnings-icon">📅</div>
+                    <div class="ppd-earnings-content">
+                        <h3>₹<?php echo number_format($summary['this_month'], 2); ?></h3>
+                        <p>This Month</p>
+                    </div>
+                </div>
+
+                <div class="ppd-earnings-card">
+                    <div class="ppd-earnings-icon">📊</div>
+                    <div class="ppd-earnings-content">
+                        <h3><?php echo esc_html($summary['total_commissions']); ?></h3>
+                        <p>Total Commissions</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>All Commissions</h3>
+            <?php if (empty($commissions)): ?>
+                <p class="ppd-no-data">No commissions yet.</p>
+            <?php else: ?>
+                <div class="ppd-table-wrapper">
+                    <table class="ppd-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Paid Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($commissions as $commission): ?>
+                                <tr>
+                                    <td><?php echo esc_html(date('M d, Y', strtotime($commission->created_at))); ?></td>
+                                    <td><?php echo esc_html($commission->description); ?></td>
+                                    <td><?php echo esc_html(ucfirst($commission->commission_type)); ?></td>
+                                    <td>₹<?php echo number_format($commission->amount, 2); ?></td>
+                                    <td>
+                                        <span class="ppd-status-badge status-<?php echo esc_attr($commission->status); ?>">
+                                            <?php echo esc_html(ucfirst($commission->status)); ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo $commission->paid_date ? esc_html(date('M d, Y', strtotime($commission->paid_date))) : '-'; ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_documents_tab($partner_id) {
+        $documents = PPD_Documents::get_documents($partner_id);
+        $categories = PPD_Documents::get_categories();
+
+        ob_start();
+        ?>
+        <div class="ppd-documents-section">
+            <h2>Documents & Resources</h2>
+
+            <div class="ppd-documents-filter">
+                <select id="ppd-document-category-filter">
+                    <option value="">All Categories</option>
+                    <?php foreach ($categories as $key => $label): ?>
+                        <option value="<?php echo esc_attr($key); ?>"><?php echo esc_html($label); ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <?php if (empty($documents)): ?>
+                <p class="ppd-no-data">No documents available yet.</p>
+            <?php else: ?>
+                <div class="ppd-documents-grid">
+                    <?php foreach ($documents as $document): ?>
+                        <div class="ppd-document-card" data-category="<?php echo esc_attr($document->category); ?>">
+                            <div class="ppd-document-icon">
+                                <?php
+                                $extension = pathinfo($document->file_name, PATHINFO_EXTENSION);
+                                switch ($extension) {
+                                    case 'pdf': echo '📄'; break;
+                                    case 'doc':
+                                    case 'docx': echo '📝'; break;
+                                    case 'xls':
+                                    case 'xlsx': echo '📊'; break;
+                                    case 'ppt':
+                                    case 'pptx': echo '📊'; break;
+                                    case 'jpg':
+                                    case 'jpeg':
+                                    case 'png': echo '🖼️'; break;
+                                    case 'zip': echo '📦'; break;
+                                    default: echo '📁'; break;
+                                }
+                                ?>
+                            </div>
+                            <div class="ppd-document-info">
+                                <h4><?php echo esc_html($document->title); ?></h4>
+                                <p><?php echo esc_html($document->description); ?></p>
+                                <div class="ppd-document-meta">
+                                    <span><?php echo esc_html($categories[$document->category]); ?></span>
+                                    <span><?php echo PPD_Documents::format_file_size($document->file_size); ?></span>
+                                </div>
+                            </div>
+                            <div class="ppd-document-actions">
+                                <a href="<?php echo esc_url(PPD_Documents::get_download_url($document->id)); ?>" class="ppd-btn ppd-btn-small" download>
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_notifications_panel($partner_id) {
+        $notifications = PPD_Notifications::get_user_notifications($partner_id);
+
+        ob_start();
+        ?>
+        <div class="ppd-notifications-content">
+            <div class="ppd-notifications-header">
+                <h3>Notifications</h3>
+                <button id="ppd-mark-all-read" class="ppd-btn ppd-btn-small">Mark All Read</button>
+            </div>
+
+            <div class="ppd-notifications-list">
+                <?php if (empty($notifications)): ?>
+                    <p class="ppd-no-data">No notifications yet.</p>
+                <?php else: ?>
+                    <?php foreach ($notifications as $notification): ?>
+                        <div class="ppd-notification-item <?php echo $notification->is_read ? 'read' : 'unread'; ?>" data-notification-id="<?php echo esc_attr($notification->id); ?>">
+                            <div class="ppd-notification-icon ppd-notification-<?php echo esc_attr($notification->type); ?>">
+                                <?php
+                                switch ($notification->type) {
+                                    case 'task': echo '📋'; break;
+                                    case 'lead': echo '👥'; break;
+                                    case 'commission': echo '💰'; break;
+                                    case 'document': echo '📄'; break;
+                                    case 'success': echo '✅'; break;
+                                    case 'warning': echo '⚠️'; break;
+                                    default: echo 'ℹ️'; break;
+                                }
+                                ?>
+                            </div>
+                            <div class="ppd-notification-content">
+                                <h4><?php echo esc_html($notification->title); ?></h4>
+                                <p><?php echo esc_html($notification->message); ?></p>
+                                <span class="ppd-notification-time"><?php echo human_time_diff(strtotime($notification->created_at), current_time('timestamp')) . ' ago'; ?></span>
+                            </div>
+                            <?php if (!$notification->is_read): ?>
+                                <button class="ppd-mark-read" data-notification-id="<?php echo esc_attr($notification->id); ?>">×</button>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
         <?php

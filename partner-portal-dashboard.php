@@ -3,7 +3,7 @@
  * Plugin Name: Partner Portal Dashboard
  * Plugin URI: https://collegekampus.com
  * Description: Complete partner management system with dashboard, profile, colleges, services, tasks, leads board, and Google Sheets integration
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: CollegeKampus
  * Author URI: https://collegekampus.com
  * License: GPL v2 or later
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('PPD_VERSION', '1.0.0');
+define('PPD_VERSION', '2.0.0');
 define('PPD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PPD_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('PPD_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -36,6 +36,11 @@ require_once PPD_PLUGIN_DIR . 'includes/class-ppd-leads.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-google-sheets.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-shortcodes.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-ajax.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-analytics.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-commissions.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-notifications.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-pipeline.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-documents.php';
 
 /**
  * Main Plugin Class
@@ -129,11 +134,23 @@ class Partner_Portal_Dashboard {
         PPD_Google_Sheets::get_instance();
         PPD_Shortcodes::get_instance();
         PPD_Ajax::get_instance();
+        PPD_Analytics::get_instance();
+        PPD_Commissions::get_instance();
+        PPD_Notifications::get_instance();
+        PPD_Pipeline::get_instance();
+        PPD_Documents::get_instance();
     }
 
     public function enqueue_frontend_assets() {
         wp_enqueue_style('ppd-frontend', PPD_PLUGIN_URL . 'assets/css/frontend.css', array(), PPD_VERSION);
-        wp_enqueue_script('ppd-frontend', PPD_PLUGIN_URL . 'assets/js/frontend.js', array('jquery'), PPD_VERSION, true);
+
+        // Enqueue Chart.js from CDN
+        wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js', array(), '3.9.1', true);
+
+        // Enqueue Sortable.js for drag and drop
+        wp_enqueue_script('sortablejs', 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js', array(), '1.15.0', true);
+
+        wp_enqueue_script('ppd-frontend', PPD_PLUGIN_URL . 'assets/js/frontend.js', array('jquery', 'chartjs', 'sortablejs'), PPD_VERSION, true);
 
         wp_localize_script('ppd-frontend', 'ppdAjax', array(
             'ajaxurl' => admin_url('admin-ajax.php'),
