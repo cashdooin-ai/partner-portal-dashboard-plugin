@@ -84,16 +84,22 @@ class PPD_Dashboard {
             <?php endif; ?>
 
             <div class="ppd-dashboard-navigation">
-                <a href="#analytics" class="ppd-nav-tab active" data-tab="analytics">Analytics</a>
-                <a href="#profile" class="ppd-nav-tab" data-tab="profile">Profile</a>
-                <a href="#pipeline" class="ppd-nav-tab" data-tab="pipeline">Lead Pipeline</a>
-                <a href="#leads" class="ppd-nav-tab" data-tab="leads">Leads Board</a>
-                <a href="#commissions" class="ppd-nav-tab" data-tab="commissions">Earnings</a>
-                <a href="#colleges" class="ppd-nav-tab" data-tab="colleges">My Colleges</a>
-                <a href="#services" class="ppd-nav-tab" data-tab="services">Services</a>
-                <a href="#tasks" class="ppd-nav-tab" data-tab="tasks">Tasks</a>
-                <a href="#documents" class="ppd-nav-tab" data-tab="documents">Documents</a>
-                <a href="#google-sheets" class="ppd-nav-tab" data-tab="google-sheets">Google Sheets</a>
+                <a href="#analytics" class="ppd-nav-tab active" data-tab="analytics">📊 Analytics</a>
+                <a href="#profile" class="ppd-nav-tab" data-tab="profile">👤 Profile</a>
+                <a href="#communication" class="ppd-nav-tab" data-tab="communication">💬 Communication</a>
+                <a href="#calendar" class="ppd-nav-tab" data-tab="calendar">📅 Calendar</a>
+                <a href="#performance" class="ppd-nav-tab" data-tab="performance">🏆 Performance</a>
+                <a href="#referrals" class="ppd-nav-tab" data-tab="referrals">🤝 Referrals</a>
+                <a href="#students" class="ppd-nav-tab" data-tab="students">🎓 Students</a>
+                <a href="#pipeline" class="ppd-nav-tab" data-tab="pipeline">🔄 Pipeline</a>
+                <a href="#leads" class="ppd-nav-tab" data-tab="leads">👥 Leads</a>
+                <a href="#commissions" class="ppd-nav-tab" data-tab="commissions">💰 Earnings</a>
+                <a href="#colleges" class="ppd-nav-tab" data-tab="colleges">🏫 Colleges</a>
+                <a href="#services" class="ppd-nav-tab" data-tab="services">🛎️ Services</a>
+                <a href="#tasks" class="ppd-nav-tab" data-tab="tasks">📋 Tasks</a>
+                <a href="#documents" class="ppd-nav-tab" data-tab="documents">📄 Documents</a>
+                <a href="#activity" class="ppd-nav-tab" data-tab="activity">⏱️ Activity</a>
+                <a href="#google-sheets" class="ppd-nav-tab" data-tab="google-sheets">📊 Sheets</a>
             </div>
 
             <div class="ppd-dashboard-content">
@@ -135,6 +141,30 @@ class PPD_Dashboard {
 
                 <div id="ppd-tab-google-sheets" class="ppd-tab-content">
                     <?php echo self::render_google_sheets_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-communication" class="ppd-tab-content">
+                    <?php echo self::render_communication_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-calendar" class="ppd-tab-content">
+                    <?php echo self::render_calendar_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-performance" class="ppd-tab-content">
+                    <?php echo self::render_performance_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-referrals" class="ppd-tab-content">
+                    <?php echo self::render_referrals_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-students" class="ppd-tab-content">
+                    <?php echo self::render_students_tab($partner_id); ?>
+                </div>
+
+                <div id="ppd-tab-activity" class="ppd-tab-content">
+                    <?php echo self::render_activity_tab($partner_id); ?>
                 </div>
             </div>
 
@@ -789,6 +819,681 @@ class PPD_Dashboard {
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_communication_tab($partner_id) {
+        $messages = PPD_Communication::get_user_messages($partner_id);
+        $tickets = PPD_Communication::get_user_tickets($partner_id);
+        $announcements = PPD_Communication::get_active_announcements();
+        $faqs = PPD_Communication::get_all_faqs();
+
+        ob_start();
+        ?>
+        <div class="ppd-communication-section">
+            <h2>Communication Center</h2>
+
+            <div class="ppd-comm-tabs">
+                <button class="ppd-comm-tab-btn active" data-comm-tab="messages">Messages</button>
+                <button class="ppd-comm-tab-btn" data-comm-tab="tickets">Support Tickets</button>
+                <button class="ppd-comm-tab-btn" data-comm-tab="announcements">Announcements</button>
+                <button class="ppd-comm-tab-btn" data-comm-tab="faq">FAQ</button>
+            </div>
+
+            <!-- Messages Tab -->
+            <div id="ppd-comm-messages" class="ppd-comm-tab-content active">
+                <div class="ppd-section-header">
+                    <h3>Direct Messages</h3>
+                    <button class="ppd-btn ppd-btn-primary" id="ppd-new-message-btn">New Message</button>
+                </div>
+
+                <?php if (empty($messages)): ?>
+                    <div class="ppd-empty-state">
+                        <span class="ppd-empty-icon">✉️</span>
+                        <p>No messages yet.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="ppd-messages-list">
+                        <?php foreach ($messages as $message): ?>
+                            <div class="ppd-message-card <?php echo $message->is_read ? '' : 'unread'; ?>">
+                                <div class="ppd-message-header">
+                                    <h4><?php echo esc_html($message->subject); ?></h4>
+                                    <span class="ppd-message-date"><?php echo human_time_diff(strtotime($message->created_at), current_time('timestamp')) . ' ago'; ?></span>
+                                </div>
+                                <p><?php echo esc_html(substr($message->message, 0, 100)) . '...'; ?></p>
+                                <button class="ppd-btn ppd-btn-small ppd-view-message" data-message-id="<?php echo esc_attr($message->id); ?>">View Message</button>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Tickets Tab -->
+            <div id="ppd-comm-tickets" class="ppd-comm-tab-content">
+                <div class="ppd-section-header">
+                    <h3>Support Tickets</h3>
+                    <button class="ppd-btn ppd-btn-primary" id="ppd-new-ticket-btn">Create Ticket</button>
+                </div>
+
+                <?php if (empty($tickets)): ?>
+                    <div class="ppd-empty-state">
+                        <span class="ppd-empty-icon">🎫</span>
+                        <p>No support tickets yet.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="ppd-tickets-grid">
+                        <?php foreach ($tickets as $ticket): ?>
+                            <div class="ppd-ticket-card">
+                                <div class="ppd-ticket-header">
+                                    <h4>#<?php echo esc_html($ticket->id); ?> - <?php echo esc_html($ticket->subject); ?></h4>
+                                    <span class="ppd-ticket-priority priority-<?php echo esc_attr($ticket->priority); ?>">
+                                        <?php echo esc_html(ucfirst($ticket->priority)); ?>
+                                    </span>
+                                </div>
+                                <p><?php echo esc_html(substr($ticket->message, 0, 80)) . '...'; ?></p>
+                                <div class="ppd-ticket-meta">
+                                    <span class="ppd-ticket-status status-<?php echo esc_attr($ticket->status); ?>">
+                                        <?php echo esc_html(str_replace('_', ' ', ucfirst($ticket->status))); ?>
+                                    </span>
+                                    <span class="ppd-ticket-category"><?php echo esc_html($ticket->category); ?></span>
+                                    <span class="ppd-ticket-date"><?php echo date('M d, Y', strtotime($ticket->created_at)); ?></span>
+                                </div>
+                                <button class="ppd-btn ppd-btn-small ppd-view-ticket" data-ticket-id="<?php echo esc_attr($ticket->id); ?>">View Ticket</button>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Announcements Tab -->
+            <div id="ppd-comm-announcements" class="ppd-comm-tab-content">
+                <h3>Announcements</h3>
+
+                <?php if (empty($announcements)): ?>
+                    <div class="ppd-empty-state">
+                        <span class="ppd-empty-icon">📢</span>
+                        <p>No announcements at this time.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="ppd-announcements-list">
+                        <?php foreach ($announcements as $announcement): ?>
+                            <div class="ppd-announcement-card <?php echo $announcement->is_pinned ? 'pinned' : ''; ?> type-<?php echo esc_attr($announcement->announcement_type); ?>">
+                                <?php if ($announcement->is_pinned): ?>
+                                    <span class="ppd-pinned-badge">📌 Pinned</span>
+                                <?php endif; ?>
+                                <h4><?php echo esc_html($announcement->title); ?></h4>
+                                <p><?php echo nl2br(esc_html($announcement->content)); ?></p>
+                                <span class="ppd-announcement-date"><?php echo date('M d, Y', strtotime($announcement->created_at)); ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- FAQ Tab -->
+            <div id="ppd-comm-faq" class="ppd-comm-tab-content">
+                <h3>Frequently Asked Questions</h3>
+
+                <?php if (empty($faqs)): ?>
+                    <div class="ppd-empty-state">
+                        <span class="ppd-empty-icon">❓</span>
+                        <p>No FAQs available yet.</p>
+                    </div>
+                <?php else: ?>
+                    <div class="ppd-faq-list">
+                        <?php
+                        $categories = [];
+                        foreach ($faqs as $faq) {
+                            $categories[$faq->category][] = $faq;
+                        }
+
+                        foreach ($categories as $category => $category_faqs): ?>
+                            <div class="ppd-faq-category">
+                                <h4><?php echo esc_html(ucfirst($category)); ?></h4>
+                                <?php foreach ($category_faqs as $faq): ?>
+                                    <div class="ppd-faq-item">
+                                        <div class="ppd-faq-question">
+                                            <strong>Q:</strong> <?php echo esc_html($faq->question); ?>
+                                        </div>
+                                        <div class="ppd-faq-answer">
+                                            <strong>A:</strong> <?php echo nl2br(esc_html($faq->answer)); ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_calendar_tab($partner_id) {
+        $upcoming_events = PPD_Calendar::get_upcoming_events($partner_id, 20);
+
+        ob_start();
+        ?>
+        <div class="ppd-calendar-section">
+            <h2>Calendar & Events</h2>
+
+            <div class="ppd-calendar-header">
+                <button class="ppd-btn ppd-btn-secondary" id="ppd-calendar-view-btn">📅 Calendar View</button>
+            </div>
+
+            <h3>Upcoming Events</h3>
+
+            <?php if (empty($upcoming_events)): ?>
+                <div class="ppd-empty-state">
+                    <span class="ppd-empty-icon">📅</span>
+                    <p>No upcoming events scheduled.</p>
+                </div>
+            <?php else: ?>
+                <div class="ppd-events-timeline">
+                    <?php foreach ($upcoming_events as $event): ?>
+                        <div class="ppd-event-card type-<?php echo esc_attr($event->event_type); ?>">
+                            <div class="ppd-event-date-badge">
+                                <div class="ppd-event-month"><?php echo date('M', strtotime($event->start_time)); ?></div>
+                                <div class="ppd-event-day"><?php echo date('d', strtotime($event->start_time)); ?></div>
+                            </div>
+                            <div class="ppd-event-content">
+                                <h4><?php echo esc_html($event->title); ?></h4>
+                                <p><?php echo esc_html($event->description); ?></p>
+                                <div class="ppd-event-meta">
+                                    <span class="ppd-event-type">
+                                        <?php
+                                        $type_icons = [
+                                            'meeting' => '👥',
+                                            'training' => '📚',
+                                            'deadline' => '⏰',
+                                            'college_visit' => '🏫',
+                                            'webinar' => '💻',
+                                            'conference' => '🎤'
+                                        ];
+                                        echo $type_icons[$event->event_type] ?? '📌';
+                                        ?>
+                                        <?php echo esc_html(str_replace('_', ' ', ucfirst($event->event_type))); ?>
+                                    </span>
+                                    <span class="ppd-event-time">
+                                        🕒 <?php echo date('h:i A', strtotime($event->start_time)); ?>
+                                        <?php if ($event->end_time): ?>
+                                            - <?php echo date('h:i A', strtotime($event->end_time)); ?>
+                                        <?php endif; ?>
+                                    </span>
+                                    <?php if ($event->location): ?>
+                                        <span class="ppd-event-location">📍 <?php echo esc_html($event->location); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="ppd-event-rsvp">
+                                    <span class="ppd-rsvp-status status-<?php echo esc_attr($event->rsvp_status); ?>">
+                                        <?php echo esc_html(ucfirst($event->rsvp_status)); ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_performance_tab($partner_id) {
+        $targets = PPD_Performance::get_partner_targets($partner_id);
+        $leaderboard = PPD_Performance::get_leaderboard('month', 10);
+        $partner_rank = PPD_Performance::get_partner_rank($partner_id, 'month');
+
+        ob_start();
+        ?>
+        <div class="ppd-performance-section">
+            <h2>Performance Metrics</h2>
+
+            <!-- Rank Card -->
+            <div class="ppd-rank-card">
+                <div class="ppd-rank-content">
+                    <h3>Your Current Rank</h3>
+                    <div class="ppd-rank-display">
+                        <span class="ppd-rank-number">#<?php echo esc_html($partner_rank['rank']); ?></span>
+                        <span class="ppd-rank-total">out of <?php echo esc_html($partner_rank['total']); ?> partners</span>
+                    </div>
+                </div>
+                <div class="ppd-rank-icon">🏆</div>
+            </div>
+
+            <!-- Performance Targets -->
+            <h3>My Targets</h3>
+
+            <?php if (empty($targets)): ?>
+                <div class="ppd-empty-state">
+                    <span class="ppd-empty-icon">🎯</span>
+                    <p>No targets set yet.</p>
+                </div>
+            <?php else: ?>
+                <div class="ppd-targets-grid">
+                    <?php foreach ($targets as $target):
+                        $progress_percentage = ($target->current_value / $target->target_value) * 100;
+                        $progress_percentage = min($progress_percentage, 100);
+                        $status_class = $progress_percentage >= 100 ? 'achieved' : ($progress_percentage >= 75 ? 'on-track' : 'behind');
+                    ?>
+                        <div class="ppd-target-card <?php echo $status_class; ?>">
+                            <div class="ppd-target-header">
+                                <h4>
+                                    <?php
+                                    $type_icons = [
+                                        'leads' => '👥',
+                                        'conversions' => '✅',
+                                        'revenue' => '💰',
+                                        'students' => '🎓'
+                                    ];
+                                    echo $type_icons[$target->target_type] ?? '🎯';
+                                    ?>
+                                    <?php echo esc_html(ucfirst($target->target_type)); ?>
+                                </h4>
+                                <span class="ppd-target-period">
+                                    <?php echo date('M d', strtotime($target->period_start)); ?> - <?php echo date('M d', strtotime($target->period_end)); ?>
+                                </span>
+                            </div>
+                            <div class="ppd-target-progress">
+                                <div class="ppd-progress-bar">
+                                    <div class="ppd-progress-fill" style="width: <?php echo $progress_percentage; ?>%"></div>
+                                </div>
+                                <div class="ppd-progress-text">
+                                    <span><?php echo esc_html($target->current_value); ?> / <?php echo esc_html($target->target_value); ?></span>
+                                    <span><?php echo round($progress_percentage, 1); ?>%</span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <!-- Leaderboard -->
+            <h3>🏆 Partner Leaderboard</h3>
+
+            <?php if (empty($leaderboard)): ?>
+                <div class="ppd-empty-state">
+                    <span class="ppd-empty-icon">🏆</span>
+                    <p>No leaderboard data available.</p>
+                </div>
+            <?php else: ?>
+                <div class="ppd-leaderboard">
+                    <?php foreach ($leaderboard as $index => $entry):
+                        $is_current_user = ($entry->partner_id == $partner_id);
+                    ?>
+                        <div class="ppd-leaderboard-item <?php echo $is_current_user ? 'current-user' : ''; ?> rank-<?php echo $index + 1; ?>">
+                            <div class="ppd-leaderboard-rank">
+                                <?php if ($index < 3): ?>
+                                    <span class="ppd-medal">
+                                        <?php echo $index === 0 ? '🥇' : ($index === 1 ? '🥈' : '🥉'); ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="ppd-rank-number">#<?php echo $index + 1; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="ppd-leaderboard-info">
+                                <h4><?php echo esc_html($entry->partner_name); ?> <?php echo $is_current_user ? '(You)' : ''; ?></h4>
+                                <div class="ppd-leaderboard-stats">
+                                    <span>👥 <?php echo esc_html($entry->total_leads); ?> leads</span>
+                                    <span>✅ <?php echo esc_html($entry->conversions); ?> conversions</span>
+                                    <span>📈 <?php echo esc_html($entry->conversion_rate); ?>% rate</span>
+                                </div>
+                            </div>
+                            <div class="ppd-leaderboard-score">
+                                <span class="ppd-score"><?php echo esc_html($entry->score); ?></span>
+                                <span class="ppd-score-label">points</span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_referrals_tab($partner_id) {
+        $referrals = PPD_Referrals::get_partner_referrals($partner_id);
+        $stats = PPD_Referrals::get_referral_stats($partner_id);
+
+        ob_start();
+        ?>
+        <div class="ppd-referrals-section">
+            <h2>Referral Program</h2>
+
+            <!-- Referral Stats -->
+            <div class="ppd-referral-stats-grid">
+                <div class="ppd-referral-stat-card">
+                    <div class="ppd-stat-icon">🤝</div>
+                    <div class="ppd-stat-content">
+                        <h3><?php echo esc_html($stats['total_referrals']); ?></h3>
+                        <p>Total Referrals</p>
+                    </div>
+                </div>
+
+                <div class="ppd-referral-stat-card">
+                    <div class="ppd-stat-icon">✅</div>
+                    <div class="ppd-stat-content">
+                        <h3><?php echo esc_html($stats['approved_referrals']); ?></h3>
+                        <p>Approved</p>
+                    </div>
+                </div>
+
+                <div class="ppd-referral-stat-card">
+                    <div class="ppd-stat-icon">⏳</div>
+                    <div class="ppd-stat-content">
+                        <h3><?php echo esc_html($stats['pending_referrals']); ?></h3>
+                        <p>Pending</p>
+                    </div>
+                </div>
+
+                <div class="ppd-referral-stat-card">
+                    <div class="ppd-stat-icon">💰</div>
+                    <div class="ppd-stat-content">
+                        <h3>₹<?php echo number_format($stats['total_commission'], 2); ?></h3>
+                        <p>Total Commission</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Refer New Partner -->
+            <div class="ppd-referral-form-card">
+                <h3>Refer a New Partner</h3>
+                <p>Earn commissions by referring new partners to our program!</p>
+
+                <form id="ppd-referral-form" class="ppd-form">
+                    <div class="ppd-form-row">
+                        <div class="ppd-form-group">
+                            <label for="referred_name">Full Name *</label>
+                            <input type="text" id="referred_name" name="referred_name" required>
+                        </div>
+
+                        <div class="ppd-form-group">
+                            <label for="referred_email">Email *</label>
+                            <input type="email" id="referred_email" name="referred_email" required>
+                        </div>
+                    </div>
+
+                    <div class="ppd-form-row">
+                        <div class="ppd-form-group">
+                            <label for="referred_phone">Phone</label>
+                            <input type="text" id="referred_phone" name="referred_phone">
+                        </div>
+
+                        <div class="ppd-form-group">
+                            <label for="referred_company">Company Name</label>
+                            <input type="text" id="referred_company" name="referred_company">
+                        </div>
+                    </div>
+
+                    <div class="ppd-form-group">
+                        <label for="referral_notes">Notes (Optional)</label>
+                        <textarea id="referral_notes" name="referral_notes" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" class="ppd-btn ppd-btn-primary">Submit Referral</button>
+                </form>
+            </div>
+
+            <!-- My Referrals -->
+            <h3>My Referrals</h3>
+
+            <?php if (empty($referrals)): ?>
+                <div class="ppd-empty-state">
+                    <span class="ppd-empty-icon">🤝</span>
+                    <p>No referrals yet. Start referring partners to earn commissions!</p>
+                </div>
+            <?php else: ?>
+                <div class="ppd-table-wrapper">
+                    <table class="ppd-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Commission</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($referrals as $referral): ?>
+                                <tr>
+                                    <td><?php echo esc_html($referral->referred_name); ?></td>
+                                    <td><?php echo esc_html($referral->referred_email); ?></td>
+                                    <td><?php echo esc_html($referral->referred_phone); ?></td>
+                                    <td>
+                                        <span class="ppd-status-badge status-<?php echo esc_attr($referral->status); ?>">
+                                            <?php echo esc_html(ucfirst($referral->status)); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if ($referral->commission_amount > 0): ?>
+                                            ₹<?php echo number_format($referral->commission_amount, 2); ?>
+                                        <?php else: ?>
+                                            -
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo date('M d, Y', strtotime($referral->created_at)); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_students_tab($partner_id) {
+        $students = PPD_Students::get_partner_students($partner_id);
+        $stats = PPD_Students::get_partner_student_stats($partner_id);
+
+        ob_start();
+        ?>
+        <div class="ppd-students-section">
+            <h2>Student Management</h2>
+
+            <!-- Student Stats -->
+            <div class="ppd-student-stats-grid">
+                <div class="ppd-student-stat-card">
+                    <div class="ppd-stat-icon">🎓</div>
+                    <div class="ppd-stat-content">
+                        <h3><?php echo esc_html($stats['total_students']); ?></h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+
+                <div class="ppd-student-stat-card">
+                    <div class="ppd-stat-icon">✅</div>
+                    <div class="ppd-stat-content">
+                        <h3><?php echo esc_html($stats['admitted']); ?></h3>
+                        <p>Admitted</p>
+                    </div>
+                </div>
+
+                <div class="ppd-student-stat-card">
+                    <div class="ppd-stat-icon">⏳</div>
+                    <div class="ppd-stat-content">
+                        <h3><?php echo esc_html($stats['in_progress']); ?></h3>
+                        <p>In Progress</p>
+                    </div>
+                </div>
+
+                <div class="ppd-student-stat-card">
+                    <div class="ppd-stat-icon">📄</div>
+                    <div class="ppd-stat-content">
+                        <h3><?php echo esc_html($stats['pending_verification']); ?></h3>
+                        <p>Pending Verification</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Student Button -->
+            <div class="ppd-section-header">
+                <h3>All Students</h3>
+                <button class="ppd-btn ppd-btn-primary" id="ppd-add-student-btn">Add Student</button>
+            </div>
+
+            <?php if (empty($students)): ?>
+                <div class="ppd-empty-state">
+                    <span class="ppd-empty-icon">🎓</span>
+                    <p>No students added yet.</p>
+                </div>
+            <?php else: ?>
+                <div class="ppd-students-grid">
+                    <?php foreach ($students as $student): ?>
+                        <div class="ppd-student-card">
+                            <div class="ppd-student-header">
+                                <h4><?php echo esc_html($student->student_name); ?></h4>
+                                <span class="ppd-student-status status-<?php echo esc_attr($student->application_status); ?>">
+                                    <?php echo esc_html(str_replace('_', ' ', ucfirst($student->application_status))); ?>
+                                </span>
+                            </div>
+                            <div class="ppd-student-info">
+                                <p><strong>Email:</strong> <?php echo esc_html($student->email); ?></p>
+                                <p><strong>Phone:</strong> <?php echo esc_html($student->phone); ?></p>
+                                <p><strong>Course:</strong> <?php echo esc_html($student->intended_course); ?></p>
+                                <?php if ($student->college_name): ?>
+                                    <p><strong>College:</strong> <?php echo esc_html($student->college_name); ?></p>
+                                <?php endif; ?>
+                            </div>
+                            <div class="ppd-student-progress">
+                                <div class="ppd-progress-item">
+                                    <span>Application:</span>
+                                    <span class="ppd-badge badge-<?php echo esc_attr($student->application_status); ?>">
+                                        <?php echo esc_html(ucfirst($student->application_status)); ?>
+                                    </span>
+                                </div>
+                                <div class="ppd-progress-item">
+                                    <span>Documents:</span>
+                                    <span class="ppd-badge badge-<?php echo esc_attr($student->document_status); ?>">
+                                        <?php echo esc_html(ucfirst($student->document_status)); ?>
+                                    </span>
+                                </div>
+                                <div class="ppd-progress-item">
+                                    <span>Admission:</span>
+                                    <span class="ppd-badge badge-<?php echo esc_attr($student->admission_status); ?>">
+                                        <?php echo esc_html(ucfirst($student->admission_status)); ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="ppd-student-actions">
+                                <button class="ppd-btn ppd-btn-small ppd-view-student" data-student-id="<?php echo esc_attr($student->id); ?>">View Details</button>
+                                <button class="ppd-btn ppd-btn-small ppd-upload-documents" data-student-id="<?php echo esc_attr($student->id); ?>">Upload Documents</button>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    private static function render_activity_tab($partner_id) {
+        $activities = PPD_Activity::get_user_activities($partner_id, 50);
+        $login_history = PPD_Activity::get_login_history($partner_id, 10);
+        $activity_summary = PPD_Activity::get_activity_summary($partner_id, 'week');
+
+        ob_start();
+        ?>
+        <div class="ppd-activity-section">
+            <h2>Activity Timeline</h2>
+
+            <!-- Activity Summary -->
+            <div class="ppd-activity-summary-grid">
+                <?php foreach ($activity_summary as $action => $count): ?>
+                    <div class="ppd-activity-summary-card">
+                        <h3><?php echo esc_html($count); ?></h3>
+                        <p><?php echo esc_html(ucfirst(str_replace('_', ' ', $action))); ?></p>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Recent Activities -->
+            <h3>Recent Activities</h3>
+
+            <?php if (empty($activities)): ?>
+                <div class="ppd-empty-state">
+                    <span class="ppd-empty-icon">⏱️</span>
+                    <p>No recent activities.</p>
+                </div>
+            <?php else: ?>
+                <div class="ppd-timeline">
+                    <?php foreach ($activities as $activity): ?>
+                        <div class="ppd-timeline-item">
+                            <div class="ppd-timeline-icon">
+                                <?php
+                                $icons = [
+                                    'login' => '🔐',
+                                    'profile_update' => '👤',
+                                    'lead_created' => '👥',
+                                    'task_completed' => '✅',
+                                    'document_uploaded' => '📄',
+                                    'message_sent' => '✉️',
+                                    'ticket_created' => '🎫'
+                                ];
+                                echo $icons[$activity->action] ?? '📌';
+                                ?>
+                            </div>
+                            <div class="ppd-timeline-content">
+                                <h4><?php echo esc_html(ucfirst(str_replace('_', ' ', $activity->action))); ?></h4>
+                                <?php if ($activity->description): ?>
+                                    <p><?php echo esc_html($activity->description); ?></p>
+                                <?php endif; ?>
+                                <div class="ppd-timeline-meta">
+                                    <span>🕒 <?php echo human_time_diff(strtotime($activity->created_at), current_time('timestamp')) . ' ago'; ?></span>
+                                    <?php if ($activity->ip_address): ?>
+                                        <span>🌐 <?php echo esc_html($activity->ip_address); ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <!-- Login History -->
+            <h3>Login History</h3>
+
+            <?php if (empty($login_history)): ?>
+                <div class="ppd-empty-state">
+                    <span class="ppd-empty-icon">🔐</span>
+                    <p>No login history available.</p>
+                </div>
+            <?php else: ?>
+                <div class="ppd-table-wrapper">
+                    <table class="ppd-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>IP Address</th>
+                                <th>Device/Browser</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($login_history as $login): ?>
+                                <tr>
+                                    <td><?php echo date('M d, Y h:i A', strtotime($login->created_at)); ?></td>
+                                    <td><?php echo esc_html($login->ip_address); ?></td>
+                                    <td>
+                                        <small><?php echo esc_html(substr($login->user_agent, 0, 60)) . '...'; ?></small>
+                                    </td>
+                                    <td>
+                                        <span class="ppd-status-badge status-success">✅ Success</span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
         </div>
         <?php
         return ob_get_clean();
