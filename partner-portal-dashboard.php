@@ -3,7 +3,7 @@
  * Plugin Name: Partner Portal Dashboard
  * Plugin URI: https://collegekampus.com
  * Description: Complete partner management system with dashboard, profile, colleges, services, tasks, leads board, and Google Sheets integration
- * Version: 2.0.0
+ * Version: 3.0.0
  * Author: CollegeKampus
  * Author URI: https://collegekampus.com
  * License: GPL v2 or later
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('PPD_VERSION', '2.0.0');
+define('PPD_VERSION', '3.0.0');
 define('PPD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PPD_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('PPD_PLUGIN_BASENAME', plugin_basename(__FILE__));
@@ -41,6 +41,12 @@ require_once PPD_PLUGIN_DIR . 'includes/class-ppd-commissions.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-notifications.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-pipeline.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-documents.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-communication.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-calendar.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-performance.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-referrals.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-students.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-activity.php';
 
 /**
  * Main Plugin Class
@@ -139,6 +145,12 @@ class Partner_Portal_Dashboard {
         PPD_Notifications::get_instance();
         PPD_Pipeline::get_instance();
         PPD_Documents::get_instance();
+        PPD_Communication::get_instance();
+        PPD_Calendar::get_instance();
+        PPD_Performance::get_instance();
+        PPD_Referrals::get_instance();
+        PPD_Students::get_instance();
+        PPD_Activity::get_instance();
     }
 
     public function enqueue_frontend_assets() {

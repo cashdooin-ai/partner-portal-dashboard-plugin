@@ -227,6 +227,210 @@ class PPD_Database {
         // Lead Pipeline Stages (update leads status to support pipeline)
         // Pipeline stages: new, contacted, qualified, proposal, negotiation, converted, closed_won, closed_lost
 
+        // Messages/Communication table
+        $table_messages = $wpdb->prefix . 'ppd_messages';
+        $sql_messages = "CREATE TABLE $table_messages (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            sender_id bigint(20) NOT NULL,
+            receiver_id bigint(20) NOT NULL,
+            subject varchar(255) NOT NULL,
+            message text NOT NULL,
+            is_read tinyint(1) DEFAULT 0,
+            parent_id bigint(20) DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY sender_id (sender_id),
+            KEY receiver_id (receiver_id),
+            KEY parent_id (parent_id)
+        ) $charset_collate;";
+        dbDelta($sql_messages);
+
+        // Support Tickets table
+        $table_tickets = $wpdb->prefix . 'ppd_tickets';
+        $sql_tickets = "CREATE TABLE $table_tickets (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            partner_id bigint(20) NOT NULL,
+            subject varchar(255) NOT NULL,
+            message text NOT NULL,
+            priority varchar(20) DEFAULT 'medium',
+            status varchar(20) DEFAULT 'open',
+            category varchar(100) DEFAULT 'general',
+            assigned_to bigint(20) DEFAULT NULL,
+            closed_at datetime DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY partner_id (partner_id),
+            KEY status (status)
+        ) $charset_collate;";
+        dbDelta($sql_tickets);
+
+        // Ticket Replies table
+        $table_ticket_replies = $wpdb->prefix . 'ppd_ticket_replies';
+        $sql_ticket_replies = "CREATE TABLE $table_ticket_replies (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            ticket_id bigint(20) NOT NULL,
+            user_id bigint(20) NOT NULL,
+            message text NOT NULL,
+            is_internal tinyint(1) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY ticket_id (ticket_id)
+        ) $charset_collate;";
+        dbDelta($sql_ticket_replies);
+
+        // Announcements table
+        $table_announcements = $wpdb->prefix . 'ppd_announcements';
+        $sql_announcements = "CREATE TABLE $table_announcements (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            title varchar(255) NOT NULL,
+            content text NOT NULL,
+            type varchar(50) DEFAULT 'general',
+            is_pinned tinyint(1) DEFAULT 0,
+            published_by bigint(20) NOT NULL,
+            published_at datetime DEFAULT CURRENT_TIMESTAMP,
+            expires_at datetime DEFAULT NULL,
+            PRIMARY KEY  (id),
+            KEY is_pinned (is_pinned)
+        ) $charset_collate;";
+        dbDelta($sql_announcements);
+
+        // FAQ table
+        $table_faqs = $wpdb->prefix . 'ppd_faqs';
+        $sql_faqs = "CREATE TABLE $table_faqs (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            question varchar(500) NOT NULL,
+            answer text NOT NULL,
+            category varchar(100) DEFAULT 'general',
+            display_order int DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY category (category)
+        ) $charset_collate;";
+        dbDelta($sql_faqs);
+
+        // Events/Calendar table
+        $table_events = $wpdb->prefix . 'ppd_events';
+        $sql_events = "CREATE TABLE $table_events (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            title varchar(255) NOT NULL,
+            description text DEFAULT NULL,
+            event_type varchar(50) DEFAULT 'meeting',
+            start_datetime datetime NOT NULL,
+            end_datetime datetime DEFAULT NULL,
+            location varchar(255) DEFAULT NULL,
+            partner_id bigint(20) DEFAULT NULL,
+            college_id bigint(20) DEFAULT NULL,
+            created_by bigint(20) NOT NULL,
+            reminder_sent tinyint(1) DEFAULT 0,
+            status varchar(20) DEFAULT 'scheduled',
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY partner_id (partner_id),
+            KEY start_datetime (start_datetime),
+            KEY event_type (event_type)
+        ) $charset_collate;";
+        dbDelta($sql_events);
+
+        // Performance Targets table
+        $table_targets = $wpdb->prefix . 'ppd_targets';
+        $sql_targets = "CREATE TABLE $table_targets (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            partner_id bigint(20) NOT NULL,
+            target_type varchar(50) NOT NULL,
+            target_value decimal(10,2) NOT NULL,
+            achieved_value decimal(10,2) DEFAULT 0.00,
+            period_start date NOT NULL,
+            period_end date NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY partner_id (partner_id),
+            KEY period_start (period_start)
+        ) $charset_collate;";
+        dbDelta($sql_targets);
+
+        // Referrals table
+        $table_referrals = $wpdb->prefix . 'ppd_referrals';
+        $sql_referrals = "CREATE TABLE $table_referrals (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            referrer_id bigint(20) NOT NULL,
+            referred_name varchar(255) NOT NULL,
+            referred_email varchar(100) NOT NULL,
+            referred_phone varchar(50) DEFAULT NULL,
+            status varchar(20) DEFAULT 'pending',
+            referred_partner_id bigint(20) DEFAULT NULL,
+            commission_amount decimal(10,2) DEFAULT 0.00,
+            commission_paid tinyint(1) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            approved_at datetime DEFAULT NULL,
+            PRIMARY KEY  (id),
+            KEY referrer_id (referrer_id),
+            KEY status (status)
+        ) $charset_collate;";
+        dbDelta($sql_referrals);
+
+        // Students Management table
+        $table_students = $wpdb->prefix . 'ppd_students';
+        $sql_students = "CREATE TABLE $table_students (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            partner_id bigint(20) NOT NULL,
+            lead_id bigint(20) DEFAULT NULL,
+            student_name varchar(255) NOT NULL,
+            student_email varchar(100) DEFAULT NULL,
+            student_phone varchar(50) DEFAULT NULL,
+            college_id bigint(20) DEFAULT NULL,
+            course varchar(255) DEFAULT NULL,
+            application_status varchar(50) DEFAULT 'pending',
+            document_verification_status varchar(50) DEFAULT 'pending',
+            admission_status varchar(50) DEFAULT 'pending',
+            notes text DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY partner_id (partner_id),
+            KEY lead_id (lead_id),
+            KEY application_status (application_status)
+        ) $charset_collate;";
+        dbDelta($sql_students);
+
+        // Student Documents table
+        $table_student_docs = $wpdb->prefix . 'ppd_student_documents';
+        $sql_student_docs = "CREATE TABLE $table_student_docs (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            student_id bigint(20) NOT NULL,
+            document_type varchar(100) NOT NULL,
+            file_name varchar(255) NOT NULL,
+            file_path varchar(500) NOT NULL,
+            verification_status varchar(20) DEFAULT 'pending',
+            verified_by bigint(20) DEFAULT NULL,
+            verified_at datetime DEFAULT NULL,
+            notes text DEFAULT NULL,
+            uploaded_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY student_id (student_id),
+            KEY verification_status (verification_status)
+        ) $charset_collate;";
+        dbDelta($sql_student_docs);
+
+        // Activity Log table
+        $table_activity_log = $wpdb->prefix . 'ppd_activity_log';
+        $sql_activity_log = "CREATE TABLE $table_activity_log (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            user_id bigint(20) NOT NULL,
+            action varchar(100) NOT NULL,
+            description text DEFAULT NULL,
+            entity_type varchar(50) DEFAULT NULL,
+            entity_id bigint(20) DEFAULT NULL,
+            ip_address varchar(50) DEFAULT NULL,
+            user_agent text DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY user_id (user_id),
+            KEY action (action),
+            KEY created_at (created_at)
+        ) $charset_collate;";
+        dbDelta($sql_activity_log);
+
         update_option('ppd_db_version', PPD_VERSION);
     }
 

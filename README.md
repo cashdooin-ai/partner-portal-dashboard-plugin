@@ -1,6 +1,6 @@
 # Partner Portal Dashboard Plugin
 
-A comprehensive WordPress plugin for managing a partner portal system with dashboard, profiles, colleges, services, tasks, leads board, and Google Sheets integration.
+A comprehensive WordPress plugin for managing a complete partner portal system with dashboard, profiles, colleges, services, tasks, leads board, Google Sheets integration, analytics, commissions, notifications, pipeline management, document management, communication center, calendar & events, performance metrics, referral program, student management, and activity tracking.
 
 ## Features
 
@@ -12,6 +12,17 @@ A comprehensive WordPress plugin for managing a partner portal system with dashb
 - **Task Management** - View and complete tasks assigned by admin
 - **Leads Board** - Add and manage student leads
 - **Google Sheets Integration** - Sync leads data to Google Sheets
+- **Analytics Dashboard** - Real-time performance metrics with charts
+- **Commission Tracking** - Track earnings and payment history
+- **Notifications** - Real-time alerts and updates
+- **Lead Pipeline** - Visual Kanban board with drag-and-drop
+- **Document Management** - Access and download shared documents
+- **Communication Center** - Direct messaging, support tickets, announcements, and FAQ
+- **Calendar & Events** - Meeting schedules, deadlines, and reminders
+- **Performance Metrics** - Targets, leaderboard, and success rates
+- **Referral Program** - Refer new partners and earn commissions
+- **Student Management** - Track students through admission process
+- **Activity Timeline** - View login history and action audit trail
 - **Login/Logout** - Secure authentication system
 
 ### Admin Features
@@ -21,6 +32,14 @@ A comprehensive WordPress plugin for managing a partner portal system with dashb
 - **Task Assignment** - Create and assign tasks to partners
 - **Lead Management** - View all leads and add admin notes
 - **Application Management** - Review and approve partner applications
+- **Commission Management** - Add, approve, and process partner commissions
+- **Document Management** - Upload and categorize documents for partners
+- **Communication Management** - Respond to messages and support tickets
+- **Event Management** - Schedule meetings and events for partners
+- **Performance Tracking** - Set targets and view partner leaderboard
+- **Referral Management** - Approve referrals and process commissions
+- **Student Management** - Track student admission status and verify documents
+- **Activity Monitoring** - View partner activity logs and audit trails
 
 ## Installation
 
@@ -111,6 +130,7 @@ The plugin creates a custom `partner` role with the following capabilities:
 
 The plugin creates the following database tables:
 
+**Core Tables (v1.0):**
 - `wp_ppd_partners_meta` - Partner profile information
 - `wp_ppd_colleges` - Colleges database
 - `wp_ppd_partner_colleges` - College assignments
@@ -120,6 +140,24 @@ The plugin creates the following database tables:
 - `wp_ppd_leads` - Leads database
 - `wp_ppd_google_sheets` - Google Sheets configuration
 - `wp_ppd_applications` - Partner applications
+
+**Enhanced Features Tables (v2.0):**
+- `wp_ppd_commissions` - Commission and earnings tracking
+- `wp_ppd_notifications` - Real-time notification system
+- `wp_ppd_documents` - Document management system
+
+**Communication & Collaboration Tables (v3.0):**
+- `wp_ppd_messages` - Direct messaging system
+- `wp_ppd_tickets` - Support ticket system
+- `wp_ppd_ticket_replies` - Ticket conversation threads
+- `wp_ppd_announcements` - System-wide announcements
+- `wp_ppd_faqs` - Frequently asked questions
+- `wp_ppd_events` - Calendar events and meetings
+- `wp_ppd_targets` - Performance targets for partners
+- `wp_ppd_referrals` - Partner referral tracking
+- `wp_ppd_students` - Student admission management
+- `wp_ppd_student_documents` - Student document verification
+- `wp_ppd_activity_log` - Complete activity and audit trail
 
 ## Workflow
 
@@ -172,18 +210,29 @@ partner-portal-dashboard-plugin/
 │       ├── frontend.js
 │       └── admin.js
 ├── includes/
-│   ├── class-ppd-database.php
-│   ├── class-ppd-auth.php
-│   ├── class-ppd-partner.php
-│   ├── class-ppd-admin.php
-│   ├── class-ppd-dashboard.php
-│   ├── class-ppd-colleges.php
-│   ├── class-ppd-services.php
-│   ├── class-ppd-tasks.php
-│   ├── class-ppd-leads.php
-│   ├── class-ppd-google-sheets.php
-│   ├── class-ppd-shortcodes.php
-│   └── class-ppd-ajax.php
+│   ├── class-ppd-database.php         [Database schema management]
+│   ├── class-ppd-auth.php             [Authentication & user management]
+│   ├── class-ppd-partner.php          [Partner data management]
+│   ├── class-ppd-admin.php            [Admin panel]
+│   ├── class-ppd-dashboard.php        [Dashboard rendering]
+│   ├── class-ppd-colleges.php         [College management]
+│   ├── class-ppd-services.php         [Service management]
+│   ├── class-ppd-tasks.php            [Task management]
+│   ├── class-ppd-leads.php            [Lead management]
+│   ├── class-ppd-google-sheets.php    [Google Sheets integration]
+│   ├── class-ppd-shortcodes.php       [Shortcode handlers]
+│   ├── class-ppd-ajax.php             [AJAX handlers]
+│   ├── class-ppd-analytics.php        [Analytics & metrics (v2.0)]
+│   ├── class-ppd-commissions.php      [Commission tracking (v2.0)]
+│   ├── class-ppd-notifications.php    [Notification system (v2.0)]
+│   ├── class-ppd-pipeline.php         [Lead pipeline Kanban (v2.0)]
+│   ├── class-ppd-documents.php        [Document management (v2.0)]
+│   ├── class-ppd-communication.php    [Messages & tickets (v3.0)]
+│   ├── class-ppd-calendar.php         [Events & calendar (v3.0)]
+│   ├── class-ppd-performance.php      [Performance metrics (v3.0)]
+│   ├── class-ppd-referrals.php        [Referral program (v3.0)]
+│   ├── class-ppd-students.php         [Student management (v3.0)]
+│   └── class-ppd-activity.php         [Activity tracking (v3.0)]
 ├── partner-portal-dashboard.php
 └── README.md
 ```
@@ -203,6 +252,30 @@ For support and bug reports, please contact the plugin developer.
 GPL v2 or later
 
 ## Changelog
+
+### Version 3.0.0
+- **NEW:** Communication Center with direct messaging and support tickets
+- **NEW:** Announcement board for system-wide updates
+- **NEW:** FAQ section for common questions
+- **NEW:** Calendar & Events system with meeting scheduling
+- **NEW:** Event reminders (24-hour advance notifications)
+- **NEW:** Performance Metrics with partner leaderboard
+- **NEW:** Target tracking and achievement monitoring
+- **NEW:** Success rate analysis by college/service
+- **NEW:** Referral Program for partner-to-partner referrals
+- **NEW:** Referral commission tracking and approval
+- **NEW:** Student Management through admission process
+- **NEW:** Student document upload and verification system
+- **NEW:** Activity Timeline with login history
+- **NEW:** Complete audit trail for all partner actions
+- **NEW:** IP address and user agent logging for security
+- Enhanced database with 11 new tables (messages, tickets, events, students, etc.)
+- Integrated notification system across all new features
+- Automatic activity logging on key actions
+- Document verification workflow for student management
+- Ticket priority and category system
+- Event RSVP and status tracking
+- Partner ranking and performance comparison
 
 ### Version 2.0.0
 - **NEW:** Analytics Dashboard with charts and performance metrics
@@ -296,9 +369,97 @@ GPL v2 or later
 - Document search
 - Automatic notifications when new documents are uploaded
 
+## New Features in Version 3.0
+
+### 1. Communication Center
+- **Direct Messaging**: Send and receive messages with admin
+- **Support Tickets**: Create and track support tickets with priority levels
+- **Ticket Categories**: General, Technical, Billing, Lead Related, Document, Account
+- **Priority Levels**: Low, Medium, High, Urgent
+- **Ticket Replies**: Threaded conversation system
+- **Internal Notes**: Admin-only notes on tickets
+- **Announcements**: System-wide announcements with expiration dates
+- **Pinned Announcements**: Keep important announcements at top
+- **FAQ Section**: Searchable frequently asked questions
+- **Read/Unread Tracking**: Mark messages and tickets as read/unread
+- **Status Management**: Open, In Progress, Waiting, Resolved, Closed
+
+### 2. Calendar & Events
+- **Event Scheduling**: Schedule meetings, deadlines, and training sessions
+- **Event Types**: Meeting, Training, Deadline, College Visit, Webinar, Conference
+- **Location Tracking**: Physical location or online meeting links
+- **RSVP System**: Confirmed, Tentative, Declined status
+- **Event Reminders**: Automatic reminders 24 hours before events
+- **All-Day Events**: Support for full-day events
+- **Upcoming Events**: View upcoming events in dashboard
+- **Event Filtering**: Filter by date range and status
+- **Recurring Events**: Track regular scheduled events
+
+### 3. Performance Metrics
+- **Target Setting**: Set and track performance targets
+- **Target Types**: Leads, Conversions, Revenue, Students
+- **Progress Tracking**: Real-time progress towards targets
+- **Leaderboard**: Compare performance with other partners
+- **Rankings**: Monthly, quarterly, yearly rankings
+- **Success Rate Analysis**: Track success rates by college and service
+- **Performance Periods**: Track targets by time periods
+- **Achievement Notifications**: Get notified when targets are reached
+- **Top Performers**: Identify and celebrate top partners
+
+### 4. Referral Program
+- **Partner Referrals**: Refer new partners to the program
+- **Duplicate Prevention**: Check for existing referrals by email
+- **Referral Tracking**: Track all referrals with status
+- **Status Management**: Pending, Approved, Rejected
+- **Commission Integration**: Automatic commission creation on approval
+- **Referral Statistics**: View total, approved, pending referrals
+- **Total Commission Tracking**: Track all referral earnings
+- **Admin Approval Workflow**: Admin reviews and approves referrals
+- **Automatic Notifications**: Notify referrer on status changes
+
+### 5. Student Management
+- **Student Tracking**: Track students through admission process
+- **Application Status**: Pending, In Progress, Submitted, Under Review, etc.
+- **Document Verification**: Upload and verify student documents
+- **Document Types**: ID Proof, Academic Records, Address Proof, Photos, etc.
+- **Verification Status**: Pending, Approved, Rejected
+- **Document Upload**: Secure file upload with 5MB limit
+- **College Assignment**: Link students to specific colleges
+- **Course Tracking**: Track student's intended course
+- **Lead Integration**: Link students to original leads
+- **Status Updates**: Multiple status types (application, document, admission)
+- **Verification Notes**: Admin can add notes during verification
+- **Student Statistics**: View total students, admitted, in-progress
+
+### 6. Activity Timeline
+- **Automatic Login Tracking**: Log every partner login
+- **Activity Logging**: Log all important partner actions
+- **IP Address Tracking**: Record IP address for security
+- **User Agent Logging**: Track browser and device information
+- **Entity Tracking**: Link activities to specific entities (leads, tasks, etc.)
+- **Recent Activities**: View activities from last 7 days
+- **Login History**: Detailed login history with timestamps
+- **Activity Summary**: Group activities by type and count
+- **Action Audit Trail**: Complete history of all actions
+- **Automatic Cleanup**: Remove logs older than 90 days
+- **Security Monitoring**: Track suspicious activity patterns
+
 ## Technical Implementation
 
-### New Database Tables
+### Database Tables (v3.0)
+- `wp_ppd_messages` - Direct messaging system
+- `wp_ppd_tickets` - Support ticket tracking
+- `wp_ppd_ticket_replies` - Ticket conversation threads
+- `wp_ppd_announcements` - System announcements
+- `wp_ppd_faqs` - FAQ database
+- `wp_ppd_events` - Calendar events
+- `wp_ppd_targets` - Performance targets
+- `wp_ppd_referrals` - Referral tracking
+- `wp_ppd_students` - Student management
+- `wp_ppd_student_documents` - Document verification
+- `wp_ppd_activity_log` - Activity audit trail
+
+### Database Tables (v2.0)
 - `wp_ppd_commissions` - Commission tracking
 - `wp_ppd_notifications` - Notification system
 - `wp_ppd_documents` - Document management
@@ -313,6 +474,10 @@ GPL v2 or later
 - Access control for document downloads
 - Sanitization of all user inputs
 - Role-based permissions
+- IP address logging for security monitoring
+- User agent tracking for device identification
+- Activity audit trail for compliance
+- Prepared statements for SQL security
 
 ## Credits
 
