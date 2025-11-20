@@ -16,6 +16,63 @@ jQuery(document).ready(function($) {
         $('#ppd-tab-' + tabId).addClass('active');
     });
 
+    // Communication Center Sub-tabs
+    $('.ppd-comm-tab-btn').on('click', function(e) {
+        e.preventDefault();
+
+        var tabId = $(this).data('comm-tab');
+
+        // Remove active class from all sub-tabs and content
+        $('.ppd-comm-tab-btn').removeClass('active');
+        $('.ppd-comm-tab-content').removeClass('active');
+
+        // Add active class to clicked tab and corresponding content
+        $(this).addClass('active');
+        $('#ppd-comm-' + tabId).addClass('active');
+    });
+
+    // Notifications Panel Toggle
+    $('#ppd-notifications-trigger').on('click', function() {
+        $('#ppd-notifications-panel').fadeToggle();
+    });
+
+    // Mark Notification as Read
+    $('.ppd-mark-read').on('click', function() {
+        var notificationId = $(this).data('notification-id');
+
+        $.ajax({
+            url: ppdAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'ppd_mark_notification_read',
+                nonce: ppdAjax.nonce,
+                notification_id: notificationId
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                }
+            }
+        });
+    });
+
+    // Mark All Notifications as Read
+    $('#ppd-mark-all-read').on('click', function() {
+        $.ajax({
+            url: ppdAjax.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'ppd_mark_all_notifications_read',
+                nonce: ppdAjax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                }
+            }
+        });
+    });
+
     // Profile Form Submission
     $('#ppd-profile-form').on('submit', function(e) {
         e.preventDefault();
@@ -193,6 +250,50 @@ jQuery(document).ready(function($) {
         });
     });
 
+    // Referral Form Submission
+    $('#ppd-referral-form').on('submit', function(e) {
+        e.preventDefault();
+
+        var formData = $(this).serialize();
+        formData += '&action=ppd_submit_referral&nonce=' + ppdAjax.nonce;
+
+        $.ajax({
+            url: ppdAjax.ajaxurl,
+            type: 'POST',
+            data: formData,
+            beforeSend: function() {
+                $('#ppd-referral-form button[type="submit"]').prop('disabled', true).text('Submitting...');
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('Referral submitted successfully!');
+                    $('#ppd-referral-form')[0].reset();
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.data.message);
+                }
+            },
+            error: function() {
+                alert('An error occurred. Please try again.');
+            },
+            complete: function() {
+                $('#ppd-referral-form button[type="submit"]').prop('disabled', false).text('Submit Referral');
+            }
+        });
+    });
+
+    // Document Category Filter
+    $('#ppd-document-category-filter').on('change', function() {
+        var category = $(this).val();
+
+        if (category === '') {
+            $('.ppd-document-card').show();
+        } else {
+            $('.ppd-document-card').hide();
+            $('.ppd-document-card[data-category="' + category + '"]').show();
+        }
+    });
+
     // Application Form Submission
     $('#ppd-application-form').on('submit', function(e) {
         e.preventDefault();
@@ -224,4 +325,109 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
+    // Initialize Charts if Chart.js is loaded
+    if (typeof Chart !== 'undefined' && typeof analyticsData !== 'undefined') {
+        // Lead Status Distribution Chart
+        if ($('#ppd-status-chart').length && analyticsData.lead_status) {
+            var statusCtx = document.getElementById('ppd-status-chart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(analyticsData.lead_status),
+                    datasets: [{
+                        data: Object.values(analyticsData.lead_status),
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#f093fb',
+                            '#f5576c',
+                            '#4facfe',
+                            '#00f2fe'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Monthly Trend Chart
+        if ($('#ppd-monthly-chart').length && analyticsData.monthly_trend) {
+            var monthlyCtx = document.getElementById('ppd-monthly-chart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'line',
+                data: {
+                    labels: analyticsData.monthly_trend.labels,
+                    datasets: [{
+                        label: 'Leads',
+                        data: analyticsData.monthly_trend.data,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Top Colleges Chart
+        if ($('#ppd-college-chart').length && analyticsData.top_colleges) {
+            var collegeCtx = document.getElementById('ppd-college-chart').getContext('2d');
+            new Chart(collegeCtx, {
+                type: 'bar',
+                data: {
+                    labels: analyticsData.top_colleges.labels,
+                    datasets: [{
+                        label: 'Leads',
+                        data: analyticsData.top_colleges.data,
+                        backgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+    }
+
+    // Initialize Sortable for Pipeline if Sortable.js is loaded
+    if (typeof Sortable !== 'undefined') {
+        $('.ppd-pipeline-cards').each(function() {
+            var el = this;
+            var stage = $(this).data('stage');
+
+            Sortable.create(el, {
+                group: 'leads',
+                animation: 150,
+                onEnd: function(evt) {
+                    var leadId = $(evt.item).data('lead-id');
+                    var newStage = $(evt.to).data('stage');
+
+                    $.ajax({
+                        url: ppdAjax.ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'ppd_move_lead',
+                            nonce: ppdAjax.nonce,
+                            lead_id: leadId,
+                            stage: newStage
+                        },
+                        success: function(response) {
+                            if (!response.success) {
+                                alert('Error moving lead');
+                                location.reload();
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }
 });

@@ -503,6 +503,142 @@
 
 /* === V3.0 NEW STYLES === */
 
+/* Notifications Bell */
+.ppd-notifications-bell {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    cursor: pointer;
+    z-index: 999;
+}
+
+.ppd-bell-icon {
+    font-size: 32px;
+    position: relative;
+    display: inline-block;
+}
+
+.ppd-notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #d32f2f;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+/* Notifications Panel */
+.ppd-notifications-panel {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    width: 400px;
+    max-height: 600px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 998;
+    overflow: hidden;
+}
+
+.ppd-notifications-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.ppd-notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+}
+
+.ppd-notifications-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.ppd-notifications-list {
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.ppd-notification-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.ppd-notification-item:hover {
+    background: #f8f9fa;
+}
+
+.ppd-notification-item.unread {
+    background: #f8f9ff;
+}
+
+.ppd-notification-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.ppd-notification-content {
+    flex: 1;
+}
+
+.ppd-notification-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.ppd-notification-content p {
+    margin: 0 0 5px 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.ppd-notification-time {
+    font-size: 11px;
+    color: #999;
+}
+
+.ppd-mark-read {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #999;
+    font-size: 18px;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ppd-mark-read:hover {
+    color: #333;
+}
+
 /* Empty States */
 .ppd-empty-state {
     text-align: center;
