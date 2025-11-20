@@ -1,0 +1,331 @@
+/* Hero Dashboard - Modern Clean Layout */
+
+* {
+    box-sizing: border-box;
+}
+
+.ppd-hero-dashboard {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Hero Header */
+.ppd-hero-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 60px 40px;
+    border-radius: 20px;
+    color: white;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+
+.ppd-hero-title {
+    font-size: 42px;
+    margin: 0 0 10px 0;
+    font-weight: 700;
+}
+
+.ppd-hero-subtitle {
+    font-size: 18px;
+    margin: 0;
+    opacity: 0.9;
+}
+
+.ppd-btn-logout {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.ppd-btn-logout:hover {
+    background: white;
+    color: #667eea;
+    transform: translateY(-2px);
+}
+
+/* Stats Grid */
+.ppd-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.ppd-stat-box {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.ppd-stat-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.ppd-stat-icon-circle {
+    font-size: 48px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.ppd-stat-number {
+    font-size: 48px;
+    font-weight: 700;
+    color: #333;
+    margin: 10px 0;
+}
+
+.ppd-stat-label {
+    font-size: 14px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Content Grid */
+.ppd-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* Cards */
+.ppd-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.ppd-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.ppd-card-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #fafafa;
+}
+
+.ppd-card-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+}
+
+.ppd-card-body {
+    padding: 24px;
+}
+
+.ppd-card-highlight {
+    background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+    border: 2px solid #667eea;
+}
+
+/* Buttons */
+.ppd-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+}
+
+.ppd-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.ppd-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.ppd-btn-secondary {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.ppd-btn-secondary:hover {
+    background: #e0e0e0;
+}
+
+/* Lists */
+.ppd-simple-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.ppd-simple-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ppd-simple-list li:last-child {
+    border-bottom: none;
+}
+
+/* Badges */
+.ppd-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.ppd-badge.badge-new {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.ppd-badge.badge-processing {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.ppd-badge.badge-completed {
+    background: #e8f5e9;
+    color: #388e3c;
+}
+
+.ppd-badge.badge-pending {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+/* Quick Actions */
+.ppd-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.ppd-action-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    padding: 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.ppd-action-btn:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+    transform: translateY(-2px);
+}
+
+.ppd-action-icon {
+    font-size: 32px;
+}
+
+/* Utilities */
+.ppd-text-muted {
+    color: #999;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .ppd-content-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .ppd-hero-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 24px;
+    }
+
+    .ppd-hero-title {
+        font-size: 32px;
+    }
+
+    .ppd-hero-subtitle {
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .ppd-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ppd-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ppd-quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .ppd-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ppd-stat-icon-circle {
+        width: 60px;
+        height: 60px;
+        font-size: 32px;
+    }
+
+    .ppd-stat-number {
+        font-size: 36px;
+    }
+}
+
+/* Notice */
+.ppd-notice {
+    background: #fff3e0;
+    color: #f57c00;
+    padding: 16px 24px;
+    border-radius: 8px;
+    border-left: 4px solid #f57c00;
+    font-weight: 600;
+}

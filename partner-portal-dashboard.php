@@ -29,6 +29,7 @@ require_once PPD_PLUGIN_DIR . 'includes/class-ppd-auth.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-partner.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-admin.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-dashboard.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-dashboard-simple.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-colleges.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-services.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-tasks.php';
@@ -154,7 +155,7 @@ class Partner_Portal_Dashboard {
     }
 
     public function enqueue_frontend_assets() {
-        wp_enqueue_style('ppd-frontend', PPD_PLUGIN_URL . 'assets/css/frontend.css', array(), PPD_VERSION);
+        wp_enqueue_style('ppd-frontend-hero', PPD_PLUGIN_URL . 'assets/css/frontend-hero.css', array(), PPD_VERSION);
 
         // Enqueue Chart.js from CDN
         wp_enqueue_script('chartjs', 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js', array(), '3.9.1', true);
