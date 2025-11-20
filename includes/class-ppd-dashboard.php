@@ -825,10 +825,14 @@ class PPD_Dashboard {
     }
 
     private static function render_communication_tab($partner_id) {
-        $messages = PPD_Communication::get_user_messages($partner_id);
-        $tickets = PPD_Communication::get_user_tickets($partner_id);
-        $announcements = PPD_Communication::get_active_announcements();
-        $faqs = PPD_Communication::get_all_faqs();
+        try {
+            $messages = method_exists('PPD_Communication', 'get_user_messages') ? PPD_Communication::get_user_messages($partner_id) : array();
+            $tickets = method_exists('PPD_Communication', 'get_user_tickets') ? PPD_Communication::get_user_tickets($partner_id) : array();
+            $announcements = method_exists('PPD_Communication', 'get_active_announcements') ? PPD_Communication::get_active_announcements() : array();
+            $faqs = method_exists('PPD_Communication', 'get_all_faqs') ? PPD_Communication::get_all_faqs() : array();
+        } catch (Exception $e) {
+            $messages = $tickets = $announcements = $faqs = array();
+        }
 
         ob_start();
         ?>
@@ -973,7 +977,11 @@ class PPD_Dashboard {
     }
 
     private static function render_calendar_tab($partner_id) {
-        $upcoming_events = PPD_Calendar::get_upcoming_events($partner_id, 20);
+        try {
+            $upcoming_events = method_exists('PPD_Calendar', 'get_upcoming_events') ? PPD_Calendar::get_upcoming_events($partner_id, 20) : array();
+        } catch (Exception $e) {
+            $upcoming_events = array();
+        }
 
         ob_start();
         ?>
@@ -1043,9 +1051,14 @@ class PPD_Dashboard {
     }
 
     private static function render_performance_tab($partner_id) {
-        $targets = PPD_Performance::get_partner_targets($partner_id);
-        $leaderboard = PPD_Performance::get_leaderboard('month', 10);
-        $partner_rank = PPD_Performance::get_partner_rank($partner_id, 'month');
+        try {
+            $targets = method_exists('PPD_Performance', 'get_partner_targets') ? PPD_Performance::get_partner_targets($partner_id) : array();
+            $leaderboard = method_exists('PPD_Performance', 'get_leaderboard') ? PPD_Performance::get_leaderboard('month', 10) : array();
+            $partner_rank = method_exists('PPD_Performance', 'get_partner_rank') ? PPD_Performance::get_partner_rank($partner_id, 'month') : array('rank' => 0, 'total' => 0);
+        } catch (Exception $e) {
+            $targets = $leaderboard = array();
+            $partner_rank = array('rank' => 0, 'total' => 0);
+        }
 
         ob_start();
         ?>
@@ -1156,8 +1169,13 @@ class PPD_Dashboard {
     }
 
     private static function render_referrals_tab($partner_id) {
-        $referrals = PPD_Referrals::get_partner_referrals($partner_id);
-        $stats = PPD_Referrals::get_referral_stats($partner_id);
+        try {
+            $referrals = method_exists('PPD_Referrals', 'get_partner_referrals') ? PPD_Referrals::get_partner_referrals($partner_id) : array();
+            $stats = method_exists('PPD_Referrals', 'get_referral_stats') ? PPD_Referrals::get_referral_stats($partner_id) : array('total_referrals' => 0, 'approved_referrals' => 0, 'pending_referrals' => 0, 'total_commission' => 0);
+        } catch (Exception $e) {
+            $referrals = array();
+            $stats = array('total_referrals' => 0, 'approved_referrals' => 0, 'pending_referrals' => 0, 'total_commission' => 0);
+        }
 
         ob_start();
         ?>
@@ -1290,8 +1308,13 @@ class PPD_Dashboard {
     }
 
     private static function render_students_tab($partner_id) {
-        $students = PPD_Students::get_partner_students($partner_id);
-        $stats = PPD_Students::get_partner_student_stats($partner_id);
+        try {
+            $students = method_exists('PPD_Students', 'get_partner_students') ? PPD_Students::get_partner_students($partner_id) : array();
+            $stats = method_exists('PPD_Students', 'get_partner_student_stats') ? PPD_Students::get_partner_student_stats($partner_id) : array('total_students' => 0, 'admitted' => 0, 'in_progress' => 0, 'pending_verification' => 0);
+        } catch (Exception $e) {
+            $students = array();
+            $stats = array('total_students' => 0, 'admitted' => 0, 'in_progress' => 0, 'pending_verification' => 0);
+        }
 
         ob_start();
         ?>
@@ -1396,9 +1419,13 @@ class PPD_Dashboard {
     }
 
     private static function render_activity_tab($partner_id) {
-        $activities = PPD_Activity::get_user_activities($partner_id, 50);
-        $login_history = PPD_Activity::get_login_history($partner_id, 10);
-        $activity_summary = PPD_Activity::get_activity_summary($partner_id, 'week');
+        try {
+            $activities = method_exists('PPD_Activity', 'get_user_activities') ? PPD_Activity::get_user_activities($partner_id, 50) : array();
+            $login_history = method_exists('PPD_Activity', 'get_login_history') ? PPD_Activity::get_login_history($partner_id, 10) : array();
+            $activity_summary = method_exists('PPD_Activity', 'get_activity_summary') ? PPD_Activity::get_activity_summary($partner_id, 'week') : array();
+        } catch (Exception $e) {
+            $activities = $login_history = $activity_summary = array();
+        }
 
         ob_start();
         ?>
