@@ -44,8 +44,8 @@ require_once PPD_PLUGIN_DIR . 'includes/class-ppd-pipeline.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-documents.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-communication.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-calendar.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-performance.php';
 // Temporarily disabled v3.0 classes to debug 500 error - testing one by one
-// require_once PPD_PLUGIN_DIR . 'includes/class-ppd-performance.php';
 // require_once PPD_PLUGIN_DIR . 'includes/class-ppd-referrals.php';
 // require_once PPD_PLUGIN_DIR . 'includes/class-ppd-students.php';
 // require_once PPD_PLUGIN_DIR . 'includes/class-ppd-activity.php';
@@ -149,8 +149,8 @@ class Partner_Portal_Dashboard {
         PPD_Documents::get_instance();
         PPD_Communication::get_instance();
         PPD_Calendar::get_instance();
+        PPD_Performance::get_instance();
         // Temporarily disabled v3.0 classes to debug 500 error - testing one by one
-        // PPD_Performance::get_instance();
         // PPD_Referrals::get_instance();
         // PPD_Students::get_instance();
         // PPD_Activity::get_instance();
