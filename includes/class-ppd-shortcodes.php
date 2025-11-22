@@ -26,7 +26,7 @@ class PPD_Shortcodes {
     }
 
     public function render_dashboard($atts) {
-        return PPD_Dashboard_Simple::render_dashboard();
+        return PPD_Dashboard::render_dashboard();
     }
 
     public function render_login($atts) {
