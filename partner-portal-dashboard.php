@@ -42,8 +42,8 @@ require_once PPD_PLUGIN_DIR . 'includes/class-ppd-commissions.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-notifications.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-pipeline.php';
 require_once PPD_PLUGIN_DIR . 'includes/class-ppd-documents.php';
-// Temporarily disabled v3.0 classes to debug 500 error
-// require_once PPD_PLUGIN_DIR . 'includes/class-ppd-communication.php';
+require_once PPD_PLUGIN_DIR . 'includes/class-ppd-communication.php';
+// Temporarily disabled v3.0 classes to debug 500 error - testing one by one
 // require_once PPD_PLUGIN_DIR . 'includes/class-ppd-calendar.php';
 // require_once PPD_PLUGIN_DIR . 'includes/class-ppd-performance.php';
 // require_once PPD_PLUGIN_DIR . 'includes/class-ppd-referrals.php';
@@ -147,8 +147,8 @@ class Partner_Portal_Dashboard {
         PPD_Notifications::get_instance();
         PPD_Pipeline::get_instance();
         PPD_Documents::get_instance();
-        // Temporarily disabled v3.0 classes to debug 500 error
-        // PPD_Communication::get_instance();
+        PPD_Communication::get_instance();
+        // Temporarily disabled v3.0 classes to debug 500 error - testing one by one
         // PPD_Calendar::get_instance();
         // PPD_Performance::get_instance();
         // PPD_Referrals::get_instance();
