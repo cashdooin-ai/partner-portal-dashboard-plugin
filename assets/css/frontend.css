@@ -163,6 +163,11 @@
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
+/* Dashboard Content Wrapper */
+.ppd-dashboard-content {
+    margin-bottom: 30px;
+}
+
 /* Tab Content */
 .ppd-tab-content {
     display: none;
