@@ -3,7 +3,7 @@
  * Plugin Name: Partner Portal Dashboard
  * Plugin URI: https://collegekampus.com
  * Description: Complete partner management system with dashboard, profile, colleges, services, tasks, leads board, and Google Sheets integration
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: CollegeKampus
  * Author URI: https://collegekampus.com
  * License: GPL v2 or later
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('PPD_VERSION', '3.0.0');
+define('PPD_VERSION', '3.0.1');
 define('PPD_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PPD_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('PPD_PLUGIN_BASENAME', plugin_basename(__FILE__));
