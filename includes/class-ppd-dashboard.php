@@ -507,8 +507,18 @@ class PPD_Dashboard {
     }
 
     private static function render_analytics_tab($partner_id) {
-        $analytics = PPD_Analytics::get_partner_analytics($partner_id);
-        $comparison = PPD_Analytics::get_comparison_data($partner_id);
+        try {
+            $analytics = method_exists('PPD_Analytics', 'get_partner_analytics')
+                ? PPD_Analytics::get_partner_analytics($partner_id)
+                : array('conversion_rate' => 0, 'task_completion_rate' => 0, 'total_earnings' => 0, 'pending_earnings' => 0, 'period_earnings' => 0);
+
+            $comparison = method_exists('PPD_Analytics', 'get_comparison_data')
+                ? PPD_Analytics::get_comparison_data($partner_id)
+                : array('current_month' => 0, 'trend' => 'neutral', 'percentage_change' => 0);
+        } catch (Exception $e) {
+            $analytics = array('conversion_rate' => 0, 'task_completion_rate' => 0, 'total_earnings' => 0, 'pending_earnings' => 0, 'period_earnings' => 0);
+            $comparison = array('current_month' => 0, 'trend' => 'neutral', 'percentage_change' => 0);
+        }
 
         ob_start();
         ?>
@@ -521,19 +531,19 @@ class PPD_Dashboard {
                     <div class="ppd-analytics-metrics">
                         <div class="ppd-metric">
                             <span class="ppd-metric-label">Conversion Rate</span>
-                            <span class="ppd-metric-value"><?php echo esc_html($analytics['conversion_rate']); ?>%</span>
+                            <span class="ppd-metric-value"><?php echo esc_html(isset($analytics['conversion_rate']) ? $analytics['conversion_rate'] : 0); ?>%</span>
                         </div>
                         <div class="ppd-metric">
                             <span class="ppd-metric-label">Task Completion</span>
-                            <span class="ppd-metric-value"><?php echo esc_html($analytics['task_completion_rate']); ?>%</span>
+                            <span class="ppd-metric-value"><?php echo esc_html(isset($analytics['task_completion_rate']) ? $analytics['task_completion_rate'] : 0); ?>%</span>
                         </div>
                         <div class="ppd-metric">
                             <span class="ppd-metric-label">This Month</span>
-                            <span class="ppd-metric-value"><?php echo esc_html($comparison['current_month']); ?> leads</span>
-                            <?php if ($comparison['trend'] == 'up'): ?>
-                                <span class="ppd-trend-up">↑ <?php echo abs($comparison['percentage_change']); ?>%</span>
+                            <span class="ppd-metric-value"><?php echo esc_html(isset($comparison['current_month']) ? $comparison['current_month'] : 0); ?> leads</span>
+                            <?php if (isset($comparison['trend']) && $comparison['trend'] == 'up'): ?>
+                                <span class="ppd-trend-up">↑ <?php echo abs(isset($comparison['percentage_change']) ? $comparison['percentage_change'] : 0); ?>%</span>
                             <?php else: ?>
-                                <span class="ppd-trend-down">↓ <?php echo abs($comparison['percentage_change']); ?>%</span>
+                                <span class="ppd-trend-down">↓ <?php echo abs(isset($comparison['percentage_change']) ? $comparison['percentage_change'] : 0); ?>%</span>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -561,15 +571,15 @@ class PPD_Dashboard {
                     <div class="ppd-earnings-summary">
                         <div class="ppd-earnings-item">
                             <span>Total Earned:</span>
-                            <strong>₹<?php echo number_format($analytics['total_earnings'], 2); ?></strong>
+                            <strong>₹<?php echo number_format(isset($analytics['total_earnings']) ? $analytics['total_earnings'] : 0, 2); ?></strong>
                         </div>
                         <div class="ppd-earnings-item">
                             <span>Pending:</span>
-                            <strong>₹<?php echo number_format($analytics['pending_earnings'], 2); ?></strong>
+                            <strong>₹<?php echo number_format(isset($analytics['pending_earnings']) ? $analytics['pending_earnings'] : 0, 2); ?></strong>
                         </div>
                         <div class="ppd-earnings-item">
                             <span>This Period:</span>
-                            <strong>₹<?php echo number_format($analytics['period_earnings'], 2); ?></strong>
+                            <strong>₹<?php echo number_format(isset($analytics['period_earnings']) ? $analytics['period_earnings'] : 0, 2); ?></strong>
                         </div>
                     </div>
                 </div>
