@@ -33,6 +33,7 @@ class PPD_Dashboard {
 
         ob_start();
         ?>
+        <!-- FULL TABBED DASHBOARD v3.0.1 - IF YOU SEE THIS, NEW CODE IS LOADED -->
         <div class="ppd-dashboard-wrapper">
             <div class="ppd-dashboard-header">
                 <h1>Welcome, <?php echo esc_html($partner_data['name']); ?>!</h1>
